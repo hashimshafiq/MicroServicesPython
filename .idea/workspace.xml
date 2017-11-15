@@ -2,7 +2,6 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="33d08faf-8073-4bdf-8215-600468ae5ce3" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/micro.db" afterPath="$PROJECT_DIR$/micro.db" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app.py" afterPath="$PROJECT_DIR$/app.py" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -13,7 +12,7 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="CoverageDataManager">
-    <SUITE FILE_PATH="coverage/MicroServicesPython$MicroServicesPython.coverage" NAME="MicroServicesPython Coverage Results" MODIFIED="1510732959465" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
+    <SUITE FILE_PATH="coverage/MicroServicesPython$MicroServicesPython.coverage" NAME="MicroServicesPython Coverage Results" MODIFIED="1510737307803" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
   </component>
   <component name="ExecutionTargetManager" SELECTED_TARGET="default_target" />
   <component name="FileEditorManager">
@@ -21,13 +20,17 @@
       <file leaf-file-name="app.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/app.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1092">
-              <caret line="73" column="22" lean-forward="true" selection-start-line="73" selection-start-column="22" selection-end-line="73" selection-end-column="22" />
+            <state relative-caret-position="345">
+              <caret line="105" column="177" lean-forward="false" selection-start-line="105" selection-start-column="177" selection-end-line="105" selection-end-column="177" />
               <folding>
                 <element signature="e#0#23#0" expanded="true" />
-                <marker date="1510732952634" expanded="true" signature="327:383" ph="SELECT build... apirelease" />
-                <marker date="1510732952634" expanded="true" signature="809:865" ph="SELECT * fro... users" />
-                <marker date="1510732952634" expanded="true" signature="1404:1434" ph="SELECT * fro... users" />
+                <marker date="1510738730710" expanded="true" signature="377:433" ph="SELECT build... apirelease" />
+                <marker date="1510738730710" expanded="true" signature="859:915" ph="SELECT * fro... users" />
+                <marker date="1510738730710" expanded="true" signature="1454:1484" ph="SELECT * fro... users" />
+                <marker date="1510738730710" expanded="true" signature="2543:2592" ph="SELECT * fro... users" />
+                <marker date="1510738730710" expanded="true" signature="2720:2737" ph="INSERT into users... " />
+                <marker date="1510738730710" expanded="true" signature="2720:2768" ph="INSERT INTO users... " />
+                <marker date="1510738730710" expanded="true" signature="2720:2792" ph="INSERT INTO users... " />
               </folding>
             </state>
           </provider>
@@ -324,13 +327,17 @@
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/app.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1092">
-          <caret line="73" column="22" lean-forward="true" selection-start-line="73" selection-start-column="22" selection-end-line="73" selection-end-column="22" />
+        <state relative-caret-position="345">
+          <caret line="105" column="177" lean-forward="false" selection-start-line="105" selection-start-column="177" selection-end-line="105" selection-end-column="177" />
           <folding>
             <element signature="e#0#23#0" expanded="true" />
-            <marker date="1510732952634" expanded="true" signature="327:383" ph="SELECT build... apirelease" />
-            <marker date="1510732952634" expanded="true" signature="809:865" ph="SELECT * fro... users" />
-            <marker date="1510732952634" expanded="true" signature="1404:1434" ph="SELECT * fro... users" />
+            <marker date="1510738730710" expanded="true" signature="377:433" ph="SELECT build... apirelease" />
+            <marker date="1510738730710" expanded="true" signature="859:915" ph="SELECT * fro... users" />
+            <marker date="1510738730710" expanded="true" signature="1454:1484" ph="SELECT * fro... users" />
+            <marker date="1510738730710" expanded="true" signature="2543:2592" ph="SELECT * fro... users" />
+            <marker date="1510738730710" expanded="true" signature="2720:2737" ph="INSERT into users... " />
+            <marker date="1510738730710" expanded="true" signature="2720:2768" ph="INSERT INTO users... " />
+            <marker date="1510738730710" expanded="true" signature="2720:2792" ph="INSERT INTO users... " />
           </folding>
         </state>
       </provider>

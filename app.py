@@ -3,6 +3,7 @@ from flask import jsonify
 from flask import make_response
 from flask import abort
 from flask import request
+from flask import render_template
 import json
 from time import strftime
 from time import gmtime
@@ -11,6 +12,10 @@ import sqlite3
 
 path = "D:/OpenSource/MicroServicesPython/micro.db"
 app = Flask(__name__)
+
+@app.route("/adduser")
+def adduser():
+	return render_template('adduser.html')
 
 @app.route("/api/v2/info")
 def home_index2():

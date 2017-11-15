@@ -110,6 +110,59 @@ def add_user(new_user):
 	return jsonify(new_user)
 
 
+@app.route("/api/v1/users",methods=['POST'])
+
+def delete_user():
+	if not request.json or not 'username' in request.json:
+		abort(400)
+	user = request.json['username']
+	return jsonify({'status':del_user(user)}),200
+
+def del_user(del_user):
+	conn = sqlite3.connect(path)
+	cursor = conn.cursor()
+	cursor.execute("SELECT * from users where username=?",(del_user,))
+	data = cursor.fetchall()
+	if len(data)==0:
+		abort(404)
+	else:
+		cursor.execute("DELETE from user WHERE username=?",(del_user,))
+		conn.commit()
+	return "success"
+
+
+@app.route("/api/v1/users/<int:user_id>",methods=['PUT'])
+def update_user(user_id):
+	user = {}
+	if not request.json:
+		abort(400)
+	user['id'] = user_id
+	key_list = request.json.keys()
+	for i in key_list:
+		user[i] = request.json[i]
+	print(user)
+
+	return jsonify({"status":update_user_record(user)}),200
+
+def update_user_record(user):
+	conn = sqlite3.connect(path)
+	cursor = conn.cursor()
+	cursor.execute("SELECT * from users WHERE id=?",(user['id'],))
+	data = cursor.fetchall()
+	if(len(data)==0):
+		abort(404)
+	else:
+		key_list = user.keys()
+		for i in key_list:
+			if i != "id":
+				print(user,i)
+				cursor.execute("""UPDATE users set {0}=? WHERE id=?""".format(i),(user[i],user['id']))
+				conn.commit()
+	return "success"
+
+
+
+
 
 
 

@@ -4,6 +4,10 @@ from flask import make_response
 from flask import abort
 from flask import request
 from flask import render_template
+from flask_cors import CORS, cross_origin
+from flask import redirect
+from flask import session
+from flask import url_for
 import json
 from time import strftime
 from time import gmtime
@@ -12,6 +16,26 @@ import sqlite3
 
 path = "D:/OpenSource/MicroServicesPython/micro.db"
 app = Flask(__name__)
+CORS(app)
+
+@app.route("/")
+def main():
+    return render_template("main.html")
+
+@app.route("/addname")
+def addname():
+    if request.args.get('yourname'):
+        session['name'] = request.args.get('yourname')
+        return redirect(url_for('main'))
+    else:
+        return render_template('addname.html',session=session)
+
+@app.route("/clear")
+def clearsessio():
+    session.clear()
+    return redirect(url_for('main'))
+
+
 
 @app.route("/adduser")
 def adduser():

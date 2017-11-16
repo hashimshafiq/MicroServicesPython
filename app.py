@@ -8,16 +8,56 @@ from flask_cors import CORS, cross_origin
 from flask import redirect
 from flask import session
 from flask import url_for
+from pymongo import MongoClient
+import random
+
 import json
 from time import strftime
 from time import gmtime
-import sqlite3
 
-
-path = "D:/OpenSource/MicroServicesPython/micro.db"
 app = Flask(__name__)
 app.secret_key = 'F12Zr47j\3yX R~X@H!jmM]Lwf/,?KT'
 CORS(app)
+
+connection = MongoClient("mongodb://localhost:27017/")
+def create_mongoDatabase():
+	try:
+		dbnames = connection.database_names()
+		if 'cloud_native' not in dbnames:
+			db = connection.cloud_native.users
+			db_tweets = connection.cloud_native.tweets
+			db_api = connection.cloud_native.apirelease
+			db.insert({
+				"email":"hashim@gmail.com",
+				"id":1,
+				"name":"Hashim Shafiq",
+				"password":"abc123",
+				"username":"hashim"
+			})
+			db_tweets.insert({
+				"body": "New blog post,Launch your app with the AWS StartupKit!  # AWS",
+				"id": 1,
+				"timestamp": "2017-03-11T06:39:40Z",
+				"tweetedby": "hashim"
+			})
+			db_api.insert({
+				"buildtime": "2017-01-01 10:00:00",
+				"links": "/api/v1/users",
+				"methods": "get, post, put, delete",
+				"version": "v1"
+			})
+			db_api.insert({
+				"buildtime": "2017-02-11 10:00:00",
+				"links": "api/v2/tweets",
+				"methods": "get, post",
+				"version": "v2"
+			})
+			print("Database Initialized")
+		else:
+			print("Database already initialized")
+	except:
+		print("Database creation failed")
+
 
 @app.route("/")
 def main():
@@ -37,28 +77,16 @@ def clearsession():
     return redirect(url_for('main'))
 
 
-
 @app.route("/adduser")
 def adduser():
 	return render_template('adduser.html')
 
 @app.route("/api/v2/info")
 def home_index2():
-	conn = sqlite3.connect(path)
-	print("Database opened")
 	api_list = []
-	cursor = conn.execute("SELECT buildtime, version,methods, links from apirelease")
-
-	for row  in cursor:
-		a_dict = {}
-		a_dict['version'] = row[1]
-		print(row)
-		a_dict['buildtime'] = row[0]
-		a_dict['methods'] = row[2]
-		a_dict['links'] = row[3]
-		api_list.append(a_dict)
-
-	conn.close()
+	db = connection.cloud_native.apirelease
+	for row in db.find():
+		api_list.append(str(row))
 	return jsonify({'api_version':api_list}),200
 
 @app.route("/api/v2/tweets",methods=['GET'])
@@ -67,20 +95,11 @@ def get_tweets():
 
 
 def list_tweets():
-	conn = sqlite3.connect(path)
-	api_list=[]
-	cursor = conn.execute("SELECT username, body, tweet_time, id FROM tweets")
-	data = cursor.fetchall()
-	if data != 0:
-		for row in data:
-			tweets = {}
-			tweets['Tweet By'] = row[0]
-			tweets['Body'] = row[1]
-			tweets['Timestamp'] = row[2]
-			tweets['id'] = row[3]
-			api_list.append(tweets)
 
-	conn.close()
+	api_list=[]
+	db = connection.cloud_native.tweets
+	for row in db.find():
+		api_list.append(str(row))
 	return jsonify({'tweets_list': api_list}),200
 
 @app.route("/api/v2/tweets",methods=['POST'])
@@ -95,16 +114,18 @@ def add_tweets():
 	return jsonify({'status':add_tweet(user_tweet)}),201
 
 def add_tweet(new_tweets):
-	conn = sqlite3.connect(path)
-	cursor = conn.cursor()
-	cursor.execute("SELECT * FROM users WHERE username=?",(new_tweets['username'],))
-	data = cursor.fetchall()
-	if len(data) == 0:
+	api_list = []
+	print(new_tweets)
+	db_user = connection.cloud_native.users
+	db_tweet = connection.cloud_native.tweets
+	user = db_user.find({"username":new_tweets['username']})
+	for i in user:
+		api_list.append(str(i))
+	if api_list == []:
 		abort(404)
 	else:
-		cursor.execute("INSERT into tweets (username,body,tweet_time) VALUES(?,?,?)",(new_tweets['username'],new_tweets['body'],new_tweets['created_at']))
-		conn.commit()
-	return "success"
+		db_tweet.insert(new_tweets)
+		return "success"
 
 
 
@@ -113,42 +134,25 @@ def get_tweet(id):
 	return list_tweet(id)
 
 def list_tweet(user_id):
-	conn = sqlite3.connect(path)
+
 	api_list=[]
-	cursor=conn.cursor()
-	cursor.execute("SELECT * from tweets where id=?",(user_id,))
-	data = cursor.fetchall()
-	if len(data) == 0:
+	db = connection.cloud_native.tweets
+	for row in db.find({"id":user_id}):
+		api_list.append(str(row))
+
+	if api_list == []:
 		abort(404)
-	else:
-		user = {}
-		user['id'] = data[0][0]
-		user['username'] = data[0][1]
-		user['body'] = data[0][2]
-		user['tweet_time'] = data[0][3]
-	conn.close()
-	return jsonify(user)
+
+	return jsonify({'tweet':api_list}),200
 
 
 
 @app.route("/api/v1/info")
 def home_index():
-
-	conn = sqlite3.connect(path)
-	print("Database opened")
 	api_list = []
-	cursor = conn.execute("SELECT buildtime, version,methods, links from apirelease")
-
-	for row  in cursor:
-		a_dict = {}
-		a_dict['version'] = row[1]
-		print(row)
-		a_dict['buildtime'] = row[0]
-		a_dict['methods'] = row[2]
-		a_dict['links'] = row[3]
-		api_list.append(a_dict)
-
-	conn.close()
+	db = connection.cloud_native.apirelease
+	for row in db.find():
+		api_list.append(str(row))
 	return jsonify({'api_version':api_list}),200
 
 @app.route("/api/v1/users",methods=["GET"])
@@ -156,19 +160,10 @@ def get_users():
 	return list_users()
 
 def list_users():
-	conn = sqlite3.connect(path)
 	api_list = []
-	cursor = conn.execute("SELECT username,emailid,password,full_name,id from users")
-	print(cursor.rowcount)
-	for row in cursor:
-		a_dict = {}
-		a_dict['username'] = row[0]
-		a_dict['emailid'] = row[1]
-		a_dict['password'] = row[2]
-		a_dict['full_name'] = row[3]
-		a_dict['id'] = row[4]
-		api_list.append(a_dict)
-	conn.close()
+	db = connection.cloud_native.users
+	for row in db.find():
+		api_list.append(str(row))
 	return jsonify({'user_list':api_list}),200
 
 
@@ -178,20 +173,13 @@ def get_users_details(user_id):
 	return list_users_details(user_id)
 
 def list_users_details(user_id):
-	conn = sqlite3.connect(path)
+
 	api_list = []
-	cursor = conn.cursor()
-	cursor.execute("SELECT * from users where id=?",(user_id,))
-	data = cursor.fetchall()
-	if (len(data)!=0):
-		user = {}
-		user['username'] = data[0][0]
-		user['emailid'] = data[0][1]
-		user['password'] = data[0][2]
-		user['ful_name'] = data[0][3]
-		user['id'] = data[0][4]
-		api_list.append(user)
-	conn.close()
+	db = connection.cloud_native.users
+	for row in db.find({'id':user_id}):
+		api_list.append(str(row))
+	if api_list == []:
+		abort(404)
 	return jsonify({'user_detail':api_list}),200
 
 @app.errorhandler(404)
@@ -207,7 +195,8 @@ def create_user():
 		'username':request.json['username'],
 		'email':request.json['email'],
 		'name':request.json['name'],
-		'password':request.json['password']
+		'password':request.json['password'],
+		'id': random.randint(1,1000)
 	}
 	return jsonify({'sttaus':add_user(user)}),201
 
@@ -216,23 +205,23 @@ def invalid_request(error):
 	return make_response(jsonify({'error':'Bad Request'}),400)
 
 def add_user(new_user):
-	conn = sqlite3.connect(path)
 	api_list = []
-	cursor = conn.cursor()
-	cursor.execute("SELECT * from users WHERE username=? or emailid=?",(new_user['username'],new_user['email']))
-	data = cursor.fetchall()
-	if(len(data) !=0):
-		abort(409)
-	else:
-		cursor.execute("INSERT INTO users (username,emailid,password,full_name) VALUES (?,?,?,?)",(new_user['username'],new_user['email'],new_user['password'],new_user['name']))
-		conn.commit()
+	print(new_user)
+	db = connection.cloud_native.users
+	user = db.find({'$or':[{"username":new_user['username']},{"email":new_user['email']}]})
+	for i in user:
+		print(str(i))
+		api_list.append(str(i))
+
+	if api_list == []:
+		db.insert(new_user)
 		return "success"
-	conn.close()
+	else:
+		abort(409)
 	return jsonify(new_user)
 
 
-@app.route("/api/v1/users",methods=['POST'])
-
+@app.route("/api/v1/users",methods=['DELETE'])
 def delete_user():
 	if not request.json or not 'username' in request.json:
 		abort(400)
@@ -240,16 +229,16 @@ def delete_user():
 	return jsonify({'status':del_user(user)}),200
 
 def del_user(del_user):
-	conn = sqlite3.connect(path)
-	cursor = conn.cursor()
-	cursor.execute("SELECT * from users where username=?",(del_user,))
-	data = cursor.fetchall()
-	if len(data)==0:
+	api_list = []
+	db = connection.cloud_native.users
+	for i in db.find({'username':del_user}):
+		api_list.append(str(i))
+
+	if api_list == []:
 		abort(404)
 	else:
-		cursor.execute("DELETE from user WHERE username=?",(del_user,))
-		conn.commit()
-	return "success"
+		db.remove({"username":del_user})
+		return "success"
 
 
 @app.route("/api/v1/users/<int:user_id>",methods=['PUT'])
@@ -266,20 +255,18 @@ def update_user(user_id):
 	return jsonify({"status":update_user_record(user)}),200
 
 def update_user_record(user):
-	conn = sqlite3.connect(path)
-	cursor = conn.cursor()
-	cursor.execute("SELECT * from users WHERE id=?",(user['id'],))
-	data = cursor.fetchall()
-	if(len(data)==0):
-		abort(404)
+	api_list = []
+	print(user)
+	db_user = connection.cloud_native.users
+	users = db_user.find_one({"id":user['id']})
+	for i in users:
+		api_list.append(str(i))
+
+	if api_list == []:
+		abort(409)
 	else:
-		key_list = user.keys()
-		for i in key_list:
-			if i != "id":
-				print(user,i)
-				cursor.execute("""UPDATE users set {0}=? WHERE id=?""".format(i),(user[i],user['id']))
-				conn.commit()
-	return "success"
+		db_user.update({'id':user['id']},{"$set":user},upsert=False)
+		return "success"
 
 
 
@@ -291,4 +278,5 @@ def update_user_record(user):
 
 
 if __name__ == "__main__":
+	create_mongoDatabase()
 	app.run(host='localhost', port=5000 , debug=True)

@@ -16,6 +16,7 @@ import sqlite3
 
 path = "D:/OpenSource/MicroServicesPython/micro.db"
 app = Flask(__name__)
+app.secret_key = 'F12Zr47j\3yX R~X@H!jmM]Lwf/,?KT'
 CORS(app)
 
 @app.route("/")
@@ -31,7 +32,7 @@ def addname():
         return render_template('addname.html',session=session)
 
 @app.route("/clear")
-def clearsessio():
+def clearsession():
     session.clear()
     return redirect(url_for('main'))
 
@@ -43,7 +44,6 @@ def adduser():
 
 @app.route("/api/v2/info")
 def home_index2():
-
 	conn = sqlite3.connect(path)
 	print("Database opened")
 	api_list = []

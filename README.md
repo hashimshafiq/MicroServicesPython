@@ -65,6 +65,27 @@ Return all the tweets shared by a specific user
 Insert a new tweet in the tweets table
 
 
+### USER INTERFACE
+
+#### LOGIN PAGE
+
+![Login Page](http://i63.tinypic.com/262lh7r.jpg "Login Page")
+
+#### SIGNUP PAGE
+
+![Signup Page](http://i63.tinypic.com/eg7m9d.jpg "Signup Page")
+
+#### DASHBOARD PAGE
+
+![Dashboard Page](http://i68.tinypic.com/24d0uq8.jpg "Dashboard Page")
+
+#### PROFILE PAGE
+
+![Profile Page](http://i63.tinypic.com/10xhqad.jpg "Profile Page")
+
+
+
+
 
 
 
